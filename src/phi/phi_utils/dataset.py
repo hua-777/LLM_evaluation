@@ -42,6 +42,11 @@ class PhiPromptDataset(Dataset):
         return prompt
     
     
+    def zero_shot_evidence_eval_prompt_transform(self, idx):
+        prompt = PHI_ZERO_SHOT_EVIDENCE_EVAL_PROMPT.format(claim=self.data[idx]['claim'], evidence=self.evidence_data[idx]['evidence_sample'], task_type=self.data[idx]['task_type'])
+        return prompt
+    
+    
     # End of TODO.
     ##################################################
     
@@ -60,7 +65,7 @@ class PhiPromptDataset(Dataset):
         elif self.prompt_type == "zero_evidence":
             prompt = self.zero_shot_evidence_prompt_transform(idx)
         elif self.prompt_type == "zero_evidence_eval":
-            prompt = PHI_ZERO_SHOT_EVIDENCE_EVAL_PROMPT.format(claim=self.data[idx]['claim'], evidence=self.evidence_data[idx]['evidence'], task_type=self.data[idx]['task_type'])
+            prompt = self.zero_shot_evidence_eval_prompt_transform(idx)
         else:
             raise ValueError(f"Invalid prompt type: {self.prompt_type}")
         
