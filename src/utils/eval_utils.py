@@ -5,7 +5,6 @@ from utils.file_utils import load_jsonl
 #Import count
 from collections import Counter
 def evaluate_standard(gt_labels, pred_labels):
-    print(pred_labels[0])
     accuracy, f1score = 0, 0
 
     ##################################################

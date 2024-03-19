@@ -248,12 +248,13 @@ Respond with SUPPORTS or REFUTES
 Output:
 '''
 
+
+
 PHI_ZERO_SHOT_COT_PROMPT = '''
-Instruct:
 Claim:{claim}
 
-1. Summarize the claim.
-2. Generate a related natural or social {fact_type} fact.
-3. Do you SUPPORT or REFUTE that the claim is {task_type}? 
-Output: 
+1. Shortly summarize the claim in one sentence.
+2. Generate a related {fact_type} fact in one sentence.
+3. Is the claim {task_type}? Answer with yes or no.
+Output:
 '''

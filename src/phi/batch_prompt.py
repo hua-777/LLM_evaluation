@@ -7,6 +7,8 @@ from utils.file_utils import load_jsonl, dump_jsonl
 from phi.phi_utils.dataset import PhiPromptDataset
 from phi.phi_utils.model_setup import model_and_tokenizer_setup
 
+import json
+
 torch.set_default_device("cuda")
 
 def parse_args():
@@ -23,44 +25,53 @@ def parse_args():
     return args 
 
 def batch_prompt(model, tokenizer, annotations_filepath, output_filepath, prompt_type, evidence_filepath, batch_size):
-    
-    prompt_dataset = PhiPromptDataset(annotations_filepath, prompt_type, evidence_filepath=evidence_filepath)
-    prompt_dataloader = DataLoader(prompt_dataset, batch_size=batch_size, shuffle=False)
+    with open (output_filepath, "w") as outfile:
+        prompt_dataset = PhiPromptDataset(annotations_filepath, prompt_type, evidence_filepath=evidence_filepath)
+        prompt_dataloader = DataLoader(prompt_dataset, batch_size=batch_size, shuffle=False)
 
-    output_data = []
-    for batch in tqdm(prompt_dataloader):
-        output_texts = []
-        ##################################################
-        # TODO: Please complete the implementation of this 
-        # for loop. You need to tokenize a batch of samples
-        # generate outputs for that batch, and then decode
-        # the outputs back to regular text. The output_texts
-        # variable used in the for loop following this TODO
-        # is what should be the output of the program snippet 
-        # within TODO
+        #output_data = []
+        for batch in tqdm(prompt_dataloader):
+            output_texts = []
+            ##################################################
+            # TODO: Please complete the implementation of this 
+            # for loop. You need to tokenize a batch of samples
+            # generate outputs for that batch, and then decode
+            # the outputs back to regular text. The output_texts
+            # variable used in the for loop following this TODO
+            # is what should be the output of the program snippet 
+            # within TODO
 
-        tokens = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, return_attention_mask=True)
-        output = model.generate(**tokens, use_cache=True, max_new_tokens=200)
-        output_texts = tokenizer.batch_decode(output)
-        print(output_texts[0])
-        quit()
-        # End of TODO.
-        ##################################################
+            tokens = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, return_attention_mask=True)
+            output = model.generate(**tokens, use_cache=True, max_new_tokens=100)
+            output_texts = tokenizer.batch_decode(output)
+            # End of TODO.
+            ##################################################
 
-        for output_text in output_texts:
-            final_response = output_text.split("Output:")[-1].split("<|endoftext|>")[0]
-            tmp_response = final_response.lower()
-            if "refutes" in tmp_response or "false" in tmp_response:
-                predicted_label = "REFUTES"
-            else:
-                predicted_label = "SUPPORTS"
+            for output_text in output_texts:
+                final_response = output_text.split("Output:")[-1].split("<|endoftext|>")[0]
+                tmp_response = final_response.lower()
+                if "no" in tmp_response:
+                    predicted_label = "REFUTES"
+                elif "yes" in tmp_response or "the claim is fair" in tmp_response:
+                    predicted_label = "SUPPORTS"
+                else:
+                    predicted_label = "INVALID"
 
-            output_data.append({
-                "final_response":final_response,
-                "label":predicted_label
-                })
+                to_write = {
+                    "final_response":final_response,
+                    "label":predicted_label
+                    }
+                json.dump(to_write, outfile)
+                outfile.write('\n')
 
-    dump_jsonl(output_data, output_filepath)
+                #output_data.append({
+                #    "final_response":final_response,
+                #    "label":predicted_label
+                #    })
+                
+                #output_data.append(predicted_label)
+
+        #dump_jsonl(output_data, output_filepath)
 
 def main(args):
     model, tokenizer = model_and_tokenizer_setup(args.model_id_or_path)

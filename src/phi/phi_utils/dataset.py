@@ -45,7 +45,6 @@ class PhiPromptDataset(Dataset):
     
     def zero_shot_evidence_eval_prompt_transform(self, idx):
         prompt = PHI_ZERO_SHOT_EVIDENCE_EVAL_PROMPT.format(claim=self.data[idx]['claim'], evidence=self.evidence_data[idx]['evidence_sample'], task_type=self.data[idx]['task_type'])
-        print(prompt)
         return prompt
     
     
