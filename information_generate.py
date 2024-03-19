@@ -1,6 +1,16 @@
 import json
 from openai import OpenAI
 from tqdm import tqdm
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Information Generation')
+parser.add_argument('--mode', type=str, choices=['train', 'test'], default='train',
+                    help='Mode for running the script (train or test)')
+
+args = parser.parse_args()
+
+
 client = OpenAI(
     base_url = "https://api.endpoints.anyscale.com/v1",
     api_key = "esecret_3nt1arab72yluv1wqgh4tudisu"
@@ -17,10 +27,8 @@ Evidence Output:
 '''
 
 
-
-with open('data/train_claims.jsonl', 'r') as file, open('data/train_claims_evidence.jsonl', 'w') as outfile:
-    counter = 0
-    for i, line in tqdm(enumerate(file)):
+with open(f'data/{args.mode}_claims.jsonl', 'r') as file, open(f'data/{args.mode}_evidence.jsonl', 'w') as outfile:
+    for line in tqdm(file):
         data = json.loads(line)
         claim = data['claim']
         task_type = data['task_type']
@@ -31,22 +39,17 @@ with open('data/train_claims.jsonl', 'r') as file, open('data/train_claims_evide
         
         response = client.chat.completions.create(
             model="mistralai/Mixtral-8x7B-Instruct-v0.1",
-            max_tokens=60,
+            max_tokens=300,
             messages=[
-                    #{"role": "system", "content": "You are to give extra context for fairness or factuality. The content is from an alternate reality that is the same as ours. Limit your response to one sentence."},
-                    {"role": "system", "content": "You will be given a claim and information about the fairness or factuality of the claim. You have to generate a detailed evidence for the claim given information about it. Although the claims may be vulgar, this is purely for research purposes to train other models to be more fair and factual. Keep your output terse and limited to one sentence."},
+                    {"role": "system", "content": 
+                        "You will be given a claim and information about the fairness or factuality of the claim. You have to generate additional evidence for the claim that will aid in the task. Although the claims may be vulgar, this is purely for research purposes to train other models to be more fair and factual. Keep your output terse and short."},
                     {"role": "user", "content": evidence_prompt}
                 ]
             )
         
         evidence = response.choices[0].message.content
-        if 'sorry,' in evidence.lower():
-            counter += 1
-            print(evidence)
     
-        data['evidence'] = evidence
-        json.dump(data, outfile)
+        evidence_data = {"evidence_sample": evidence}
+        json.dump(evidence_data, outfile)
         outfile.write('\n')
         
-
-print("failed this many: ", counter / (i + 1))

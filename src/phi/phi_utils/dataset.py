@@ -1,7 +1,7 @@
 import pandas as pd
 from torch.utils.data import Dataset
 from utils.file_utils import load_jsonl
-from phi.phi_utils.constants import PHI_ZERO_SHOT_EVAL_PROMPT, PHI_FEW_SHOT_EVAL_PROMPT, PHI_ZERO_SHOT_EVIDENCE_EVAL_PROMPT, PHI_ZERO_SHOT_EVIDENCE_PROMPT
+from phi.phi_utils.constants import *
 
 class PhiPromptDataset(Dataset):
     def __init__(self, annotations_filepath, prompt_type, evidence_filepath = None):
@@ -26,7 +26,8 @@ class PhiPromptDataset(Dataset):
         return prompt
     
     def few_shot_eval_prompt_transform(self, idx):
-        prompt = PHI_FEW_SHOT_EVAL_PROMPT.format(claim=self.data[idx]['claim'], task_type=self.data[idx]['task_type'], examples=self.data[idx]['examples'])
+        prompt = PHI_FEW_SHOT_EVAL_PROMPT.format(claim=self.data[idx]['claim'], task_type=self.data[idx]['task_type'], examples=examples[self.data[idx]['domain']])
+        #print(prompt)
         return prompt
     
     
@@ -44,8 +45,17 @@ class PhiPromptDataset(Dataset):
     
     def zero_shot_evidence_eval_prompt_transform(self, idx):
         prompt = PHI_ZERO_SHOT_EVIDENCE_EVAL_PROMPT.format(claim=self.data[idx]['claim'], evidence=self.evidence_data[idx]['evidence_sample'], task_type=self.data[idx]['task_type'])
+        print(prompt)
         return prompt
     
+    
+    def zero_shot_cot_eval_prompt_transform(self, idx):
+        if self.data[idx]['task_type'] == "fairness":
+            fact_type = "social"
+        else:
+            fact_type = "natural"
+        prompt = PHI_ZERO_SHOT_COT_PROMPT.format(claim=self.data[idx]['claim'], fact_type=fact_type, task_type=self.data[idx]['task_type'])
+        return prompt
     
     # End of TODO.
     ##################################################
@@ -66,6 +76,8 @@ class PhiPromptDataset(Dataset):
             prompt = self.zero_shot_evidence_prompt_transform(idx)
         elif self.prompt_type == "zero_evidence_eval":
             prompt = self.zero_shot_evidence_eval_prompt_transform(idx)
+        elif self.prompt_type == "zero_cot_eval":
+            prompt = self.zero_shot_cot_eval_prompt_transform(idx)
         else:
             raise ValueError(f"Invalid prompt type: {self.prompt_type}")
         

@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--output_filepath', type=str, required=True)
     parser.add_argument('--prompt_type', type=str, required=True)
     parser.add_argument('--evidence_filepath', type=str, default=None)
-    parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--batch_size', type=int, default=4)
 
 
     args = parser.parse_args()
@@ -40,7 +40,7 @@ def batch_prompt(model, tokenizer, annotations_filepath, output_filepath, prompt
         # within TODO
 
         tokens = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, return_attention_mask=True)
-        output = model.generate(**tokens, use_cache=True, max_new_tokens=2)
+        output = model.generate(**tokens, use_cache=True, max_new_tokens=100)
         output_texts = tokenizer.batch_decode(output)
         # End of TODO.
         ##################################################

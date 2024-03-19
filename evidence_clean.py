@@ -1,7 +1,7 @@
 import json
 
-input_file = 'data/test_claims_evidence.jsonl'
-output_file = 'data/test_evidence.jsonl'
+input_file = 'data/output_train_few.jsonl'
+output_file = 'data/output_train_few_clean.jsonl'
 
 with open(input_file, 'r') as f, open(output_file, 'w') as out:
     for line in f:
