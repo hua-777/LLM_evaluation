@@ -63,6 +63,7 @@ def batch_prompt(model, tokenizer, annotations_filepath, output_filepath, prompt
                     }
                 json.dump(to_write, outfile)
                 outfile.write('\n')
+            
 
                 #output_data.append({
                 #    "final_response":final_response,
