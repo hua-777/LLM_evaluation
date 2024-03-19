@@ -40,8 +40,10 @@ def batch_prompt(model, tokenizer, annotations_filepath, output_filepath, prompt
         # within TODO
 
         tokens = tokenizer(batch, return_tensors="pt", padding=True, truncation=True, return_attention_mask=True)
-        output = model.generate(**tokens, use_cache=True, max_new_tokens=100)
+        output = model.generate(**tokens, use_cache=True, max_new_tokens=200)
         output_texts = tokenizer.batch_decode(output)
+        print(output_texts[0])
+        quit()
         # End of TODO.
         ##################################################
 

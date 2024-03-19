@@ -254,6 +254,6 @@ Claim:{claim}
 
 1. Summarize the claim.
 2. Generate a related natural or social {fact_type} fact.
-3. Respond with SUPPORTS or REFUTES. Is the claim {task_type}? 
+3. Do you SUPPORT or REFUTE that the claim is {task_type}? 
 Output: 
 '''

@@ -52,8 +52,10 @@ class PhiPromptDataset(Dataset):
     def zero_shot_cot_eval_prompt_transform(self, idx):
         if self.data[idx]['task_type'] == "fairness":
             fact_type = "social"
+            task_type = "fair"
         else:
             fact_type = "natural"
+            task_type = "factual"
         prompt = PHI_ZERO_SHOT_COT_PROMPT.format(claim=self.data[idx]['claim'], fact_type=fact_type, task_type=self.data[idx]['task_type'])
         return prompt
     
