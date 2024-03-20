@@ -33,8 +33,8 @@ def model_and_tokenizer_setup(model_id_or_path):
     # transformer verison is 4.36.2 < 4.37.0
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     torch.set_default_device(device)
-    model = AutoModelForCausalLM.from_pretrained("microsoft/phi-2", torch_dtype="auto", trust_remote_code=True)
-    tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_id_or_path, torch_dtype="auto", trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_id_or_path, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = 'left'
     
