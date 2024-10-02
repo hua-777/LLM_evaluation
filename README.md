@@ -1,0 +1,2 @@
+# LLM Fairness and Factuality Evaluation
+This project evaluates the capability of LLMs to accurately evaluate fairness and factuality. We utilized prompt engineering methods, such as zero-shot, few-shot, evidence, and chain-of-thought to improve performance. We utilized GPT 3.5 and Mixtral models for evidence generation, improving performance by 27% over the basic prompt with the Phi-2 model. Our results are in [report.pdf](report.pdf).
